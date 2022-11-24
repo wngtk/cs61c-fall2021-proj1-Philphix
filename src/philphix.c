@@ -68,7 +68,20 @@ int main(int argc, char **argv) {
 /* Task 3 */
 void readDictionary(char *dictName) {
   // -- TODO --
-  fprintf(stderr, "You need to implement readDictionary\n");
+  // fprintf(stderr, "You need to implement readDictionary\n");
+  FILE *fp = fopen(dictName, "r");
+  if (fp == NULL) {
+    perror(dictName);
+    exit(61);
+  }
+
+  char buffer[1024];
+  char key[1024], data[1024];
+  char *rv = NULL;
+  while ((rv = fgets(buffer, sizeof(buffer), fp)) != NULL) {
+    sscanf(rv, "%s %s", key, data);
+    insertData(dictionary, strdup(key), strdup(data));
+  }
 }
 
 /* Task 4 */
