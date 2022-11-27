@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -std=c99 -c
+CFLAGS = -g -Wall -std=gnu99 -c
 LDFLAGS = -g -Wall
 CUNIT = -L/home/ff/cs61c/cunit/install/lib -I/home/ff/cs61c/cunit/install/include -lcunit
 BUILD_DIR = ./build

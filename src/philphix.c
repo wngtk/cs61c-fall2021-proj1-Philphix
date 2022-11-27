@@ -65,6 +65,23 @@ int main(int argc, char **argv) {
 }
 #endif /* _PHILPHIX_UNITTEST */
 
+int getWord(FILE *fp, char *buf) {
+  int len = 0;
+  char ch;
+
+  while (isspace(ch = fgetc(fp)))
+    ;
+
+  if (ch != EOF)
+    buf[len++] = ch;
+
+  while (isgraph(ch = fgetc(fp)))
+    buf[len++] = ch;
+
+  buf[len] = '\0';
+  return len;
+}
+
 /* Task 3 */
 void readDictionary(char *dictName) {
   // -- TODO --
@@ -75,12 +92,14 @@ void readDictionary(char *dictName) {
     exit(61);
   }
 
-  char buffer[1024];
-  char key[1024], data[1024];
-  char *rv = NULL;
-  while ((rv = fgets(buffer, sizeof(buffer), fp)) != NULL) {
-    sscanf(rv, "%s %s", key, data);
-    insertData(dictionary, strdup(key), strdup(data));
+  char buffer[1024], *key, *data;
+  int keyLen, dataLen;
+
+  while ((keyLen = getWord(fp, buffer)) != 0) {
+    key = strcpy(malloc(keyLen), buffer);
+    dataLen = getWord(fp, buffer);
+    data = strcpy(malloc(dataLen), buffer);
+    insertData(dictionary, key, data);
   }
 }
 
