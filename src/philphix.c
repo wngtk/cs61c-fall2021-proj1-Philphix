@@ -84,8 +84,47 @@ void readDictionary(char *dictName) {
   }
 }
 
+void transform(char *data, int (*func)(int)) {
+  while (*data) {
+    *data = func(*data);
+    data++;
+  }
+}
+
 /* Task 4 */
 void processInput() {
   // -- TODO --
   fprintf(stderr, "You need to implement processInput\n");
+  char word[1024], data[1024], *exact, *lower, *mock_capitalized;
+  char ch;
+  int len = 0;
+
+  while ((ch = getchar()) != EOF) {
+    if (isalnum(ch) == 0) {
+      word[len] = '\0';
+      len = 0;
+      strcpy(data, word);
+      // Excat word
+      exact = findData(dictionary, data);
+      // Mock Capitalized
+      transform(word+1, tolower);
+      mock_capitalized = findData(dictionary, word);
+      // Lower Case
+      word[0] = tolower(word[0]);
+      lower = findData(dictionary, word);
+      if (exact) {
+        printf("%s", exact);
+      } else if (mock_capitalized) {
+        printf("%s", mock_capitalized);
+      } else if (lower) {
+        printf("%s", lower);
+      } else {
+        printf("%s", data);
+      }
+      putchar(ch);
+    } else {
+      // Read the character from stdin. Save it into WORD.
+      word[len++] = (char)ch;
+    }
+  }
 }
