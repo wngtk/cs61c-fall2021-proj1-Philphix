@@ -65,23 +65,26 @@ int main(int argc, char **argv) {
 }
 #endif /* _PHILPHIX_UNITTEST */
 
-int getWord(FILE *fp, char *buf) {
-  int len = 0;
-  char ch;
+// int getWord(FILE *fp, char *buf) {
+//   int len = 0;
+//   char ch;
 
-  while (isspace(ch = fgetc(fp)))
-    ;
+//   while (isspace(ch = fgetc(fp)))
+//     ;
 
-  if (ch != EOF)
-    buf[len++] = ch;
+//   if (ch != EOF)
+//     buf[len++] = ch;
 
-  while (isgraph(ch = fgetc(fp)))
-    buf[len++] = ch;
+//   while (isgraph(ch = fgetc(fp)))
+//     buf[len++] = ch;
 
-  buf[len] = '\0';
-  return len;
-}
+//   buf[len] = '\0';
+//   return len;
+// }
 
+// This function has the same behavior of above.
+// Read character from file stream, but the caller
+// need to free the allocated BUF.
 int get_word(FILE *fp, char **buf) {
   int len = 0;
   char c;
@@ -133,6 +136,9 @@ void transform(char *data, int (*func)(int)) {
   }
 }
 
+// This function has the same behavior of below.
+// No matter what is the length of word.
+// It is also need the caller to free allocated memory.
 int readWord(FILE *stream, char **word) {
   int c;
   int len = 0;
@@ -160,31 +166,30 @@ int readWord(FILE *stream, char **word) {
   return (*word)[0];
 }
 
-#define MAXWORD 100
+// #define MAXWORD 100
 
-int read_word(char *, int, FILE *);
-/* Rivised from K&R getword: get next word or character from input */
-int read_word(char *word, int lim, FILE *stream) {
-  int c;
-  char *w = word;
+// /* Rivised from K&R getword: get next word or character from input */
+// int read_word(char *word, int lim, FILE *stream) {
+//   int c;
+//   char *w = word;
 
-  c = fgetc(stream);
-  if (!isalnum(c)) {
-    return c;
-  }
+//   c = fgetc(stream);
+//   if (!isalnum(c)) {
+//     return c;
+//   }
 
-  *w++ = c;
-  for (; --lim > 0; w++) {
-    *w = fgetc(stream);
-    if (!isalnum(*w)) {
-      ungetc(*w, stream);
-      break;
-    }
-  }
+//   *w++ = c;
+//   for (; --lim > 0; w++) {
+//     *w = fgetc(stream);
+//     if (!isalnum(*w)) {
+//       ungetc(*w, stream);
+//       break;
+//     }
+//   }
 
-  *w = '\0';
-  return word[0];
-}
+//   *w = '\0';
+//   return word[0];
+// }
 
 char* identity(char *w)
 {
