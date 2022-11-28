@@ -110,40 +110,81 @@ void transform(char *data, int (*func)(int)) {
   }
 }
 
+#define MAXWORD 100
+
+int read_word(char *, int, FILE *);
+/* Rivised from K&R getword: get next word or character from input */
+int read_word(char *word, int lim, FILE *stream) {
+  int c;
+  char *w = word;
+
+  c = fgetc(stream);
+  if (!isalnum(c)) {
+    return c;
+  }
+
+  *w++ = c;
+  for (; --lim > 0; w++) {
+    *w = fgetc(stream);
+    if (!isalnum(*w)) {
+      ungetc(*w, stream);
+      break;
+    }
+  }
+
+  *w = '\0';
+  return word[0];
+}
+
+char* identity(char *w)
+{
+  return w;
+}
+
+char* lower(char *w)
+{
+  char *s = w;
+  while (*s) {
+    *s = tolower(*s);
+    s++;
+  }
+  return w;
+}
+
+char* lowerExceptFirst(char *w)
+{
+  lower(w+1);
+  return w;
+}
+
 /* Task 4 */
 void processInput() {
   // -- TODO --
-  fprintf(stderr, "You need to implement processInput\n");
-  char word[1024], data[1024], *exact, *lower, *mock_capitalized;
-  char ch;
-  int len = 0;
+  // fprintf(stderr, "You need to implement processInput\n");
+  int i;
+  char word[MAXWORD], back[MAXWORD];
+  char rv;
+  char* (*variations[])(char*) = {
+    identity,
+    lowerExceptFirst,
+    lower,
+  };
 
-  while ((ch = getchar()) != EOF) {
-    if (isalnum(ch) == 0) {
-      word[len] = '\0';
-      len = 0;
-      strcpy(data, word);
-      // Excat word
-      exact = findData(dictionary, data);
-      // Mock Capitalized
-      transform(word+1, tolower);
-      mock_capitalized = findData(dictionary, word);
-      // Lower Case
-      word[0] = tolower(word[0]);
-      lower = findData(dictionary, word);
-      if (exact) {
-        printf("%s", exact);
-      } else if (mock_capitalized) {
-        printf("%s", mock_capitalized);
-      } else if (lower) {
-        printf("%s", lower);
-      } else {
-        printf("%s", data);
+  while ((rv = read_word(word, MAXWORD, stdin)) != EOF) {
+    if (isalnum(rv)) {
+      strcpy(back, word);
+      for (i = 0; i < 3; i++) {
+        char *replace = findData(dictionary, variations[i](word));
+        if (replace) {
+          printf("%s", replace);
+          break;
+        }
       }
-      putchar(ch);
+      if (i == 3) {
+        printf("%s", back);
+      }
     } else {
-      // Read the character from stdin. Save it into WORD.
-      word[len++] = (char)ch;
+      printf("%c", rv);
     }
   }
 }
