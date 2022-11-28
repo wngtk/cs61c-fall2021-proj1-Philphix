@@ -133,6 +133,33 @@ void transform(char *data, int (*func)(int)) {
   }
 }
 
+int readWord(FILE *stream, char **word) {
+  int c;
+  int len = 0;
+
+  *word = malloc(len + 1);
+
+  c = fgetc(stream);
+  if (!isalnum(c)) {
+    return c;
+  }
+
+  (*word)[len++] = c;
+  *word = realloc(*word, len + 1);
+
+  while ( 1 ) {
+    (*word)[len] = fgetc(stream);
+    if (!isalnum((*word)[len])) {
+      ungetc((*word)[len], stream);
+      break;
+    }
+    len++;
+    *word = realloc(*word, len + 1);
+  }
+  (*word)[len] = '\0';
+  return (*word)[0];
+}
+
 #define MAXWORD 100
 
 int read_word(char *, int, FILE *);
@@ -185,16 +212,21 @@ void processInput() {
   // -- TODO --
   // fprintf(stderr, "You need to implement processInput\n");
   int i;
-  char word[MAXWORD], back[MAXWORD];
+  // char word[MAXWORD], back[MAXWORD];
   char rv;
+  char *word, *back;
   char* (*variations[])(char*) = {
     identity,
     lowerExceptFirst,
     lower,
   };
 
-  while ((rv = read_word(word, MAXWORD, stdin)) != EOF) {
+  // while ((rv = read_word(word, MAXWORD, stdin)) != EOF) {
+  while ((rv = readWord(stdin, &word)) != EOF) {
     if (isalnum(rv)) {
+      // strcpy(back, word);
+      int len = strlen(word);
+      back = malloc(len);
       strcpy(back, word);
       for (i = 0; i < 3; i++) {
         char *replace = findData(dictionary, variations[i](word));
