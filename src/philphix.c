@@ -82,6 +82,28 @@ int getWord(FILE *fp, char *buf) {
   return len;
 }
 
+int get_word(FILE *fp, char **buf) {
+  int len = 0;
+  char c;
+
+  *buf = malloc(len + 1);
+
+  while (isspace(c = fgetc(fp)))
+    ;
+
+  if (c != EOF) {
+    (*buf)[len++] = c;
+    *buf = realloc(*buf, len + 1);
+  }
+
+  while (isgraph(c = fgetc(fp))) {
+    (*buf)[len++] = c;
+    *buf = realloc(*buf, len + 1);
+  }
+  (*buf)[len] = '\0';
+  return len;
+}
+
 /* Task 3 */
 void readDictionary(char *dictName) {
   // -- TODO --
@@ -92,12 +114,13 @@ void readDictionary(char *dictName) {
     exit(61);
   }
 
-  char buffer[1024], *key, *data;
+  char *key, *data;
+  char *buffer;
   int keyLen, dataLen;
 
-  while ((keyLen = getWord(fp, buffer)) != 0) {
+  while ((keyLen = get_word(fp, &buffer)) != 0) {
     key = strcpy(malloc(keyLen), buffer);
-    dataLen = getWord(fp, buffer);
+    dataLen = get_word(fp, &buffer);
     data = strcpy(malloc(dataLen), buffer);
     insertData(dictionary, key, data);
   }
